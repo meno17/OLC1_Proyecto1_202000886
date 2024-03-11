@@ -1,0 +1,197 @@
+package analisis;
+
+// importaciones si fuese necesario
+import java_cup.runtime.Symbol;
+
+//import java.util.Math;
+
+//parser (codigo accesible usando punto)  p.variable
+parser code
+{:
+    public void syntax_error(Symbol s){
+        System.out.println("Error sintactico en la linea " +
+            (s.left) + " y columna " + (s.right) +
+            ". No se esperaba el componente: " + (s.value) + ".");
+    }
+    
+    public void unrecovered_syntax_error (Symbol s) throws java.lang.Exception{
+        System.out.println("Error sintactico no recuperable en la linea " +
+            (s.left) + " y columna " + (s.right) +
+            ". No se esperaba el componente: " + (s.value) + ".");
+    }
+:}
+
+// codigo interno de cup
+action code
+{:
+    String codigoUsr="";
+:}
+
+/* Especificación de símbolos terminales */
+terminal TKARRO, TKCI, TKCD, TKPI, TKPD, TKASIGNACIONI, TKCOMA, TKPCOMA, TKNUMEROS, PROGRAM, END, VAR, ARR, SUM, RES, 
+         MUL, DIV, MODULO, MEDIA, MEDIANA, MOD, VARIANZA, MAX, MIN, CONSOLE_PRINT, CONSOLE_COLUMN, DOUBLE, CHAR, CADENA,TKDDOBLEP,TKDOBLEP,TKASIGNACIOND,TKINTE;
+
+non terminal programa, declaraciones, declaracion, instrucciones, tipo,  expresiones, expresion, lista_valores, valores, valor,
+        instruccion, asignacion, operacion, estadistica, impresion_consola, impresion_arreglo, comentario,
+        operacion_aritmetica, arreglo_double, arreglo;
+
+non terminal String ID ;
+
+/* Producciones */
+start with programa;
+
+programa ::= PROGRAM declaraciones instrucciones END PROGRAM {:  RESULT=codigoUsr;   :};
+
+declaraciones ::= declaraciones declaracion
+               | /* Producción vacía */;
+
+declaracion ::= VAR TKDOBLEP tipo TKDDOBLEP ID:id TKASIGNACIONI arreglo_double:arr END TKPCOMA{: 
+                    /* Acción semántica para la declaración de variables */
+                    double[] arreglo = (double[]) arr ; // Obtener el arreglo de valores
+                    String nombre = id; // Obtener el nombre de la variable
+                    // Realizar alguna acción con la variable declarada
+                :}
+              | ARR TKDOBLEP tipo TKDDOBLEP TKARRO ID:id TKASIGNACIONI lista_valores:arr  END TKPCOMA{: 
+                    /* Acción semántica para la declaración de arreglos */
+                    double[] arreglo = (double[]) arr; // Obtener el arreglo de valores
+                    String nombre = id; // Obtener el nombre del arreglo
+                    // Realizar alguna acción con el arreglo declarado
+                :};
+
+tipo ::= DOUBLE 
+       | CHAR;
+
+lista_valores ::= TKCI valores:v TKCD{: 
+                    /* Acción semántica para la lista de valores en un arreglo */
+                    RESULT = (double[]) v; // Convertir la lista de valores a un arreglo de tipo double
+                :};
+
+valores ::= valores:vs TKCOMA valor:v {: 
+                /* Acción semántica para la lista de valores */
+                double[] arreglo = (double[]) vs; // Obtener la lista de valores anterior
+                double valor = (double) v; // Obtener el nuevo valor
+                // Crear un nuevo arreglo con el valor añadido
+                double[] nuevoArreglo = new double[arreglo.length + 1];
+                // Copiar los valores anteriores al nuevo arreglo
+                System.arraycopy(arreglo, 0, nuevoArreglo, 0, arreglo.length);
+                // Añadir el nuevo valor al final del nuevo arreglo
+                nuevoArreglo[arreglo.length] = valor;
+                RESULT = nuevoArreglo; // Actualizar el resultado con el nuevo arreglo
+            :}
+          | valor:vs {: RESULT = new double[]{(double)vs}; :};
+
+valor ::= TKNUMEROS:n {: RESULT = Double.parseDouble((String)n); :}
+        | CADENA
+        | ID;
+
+instrucciones ::= instrucciones instruccion
+                | instruccion;
+
+instruccion ::= asignacion
+              | operacion
+              | estadistica
+              | impresion_consola
+              | impresion_arreglo
+              | comentario;
+
+
+operacion ::= VAR TKDOBLEP tipo TKDDOBLEP ID:id TKASIGNACIONI operacion_aritmetica:o END TKPCOMA {: 
+                    /* Acción semántica para la operación con variables */ 
+                    double resultado = (double) o; // Obtener el resultado de la operación
+                    String nombre = id; // Obtener el nombre de la variable
+                    RESULT = resultado;
+                    // Realizar alguna acción con el resultado de la operación
+                :}
+            | ARR TKDOBLEP tipo TKDDOBLEP TKARRO ID:id TKASIGNACIOND operacion_aritmetica:o END TKPCOMA{: 
+                    /* Acción semántica para la operación con arreglos */ 
+                    double resultado = (double) o; // Obtener el resultado de la operación
+                    String nombre = id; // Obtener el nombre del arreglo
+                    
+                    RESULT = resultado;
+                    // Realizar alguna acción con el resultado de la operación
+                :};
+
+operacion_aritmetica ::= SUM TKPI expresion:e1 TKCOMA expresion:e2 TKPD{: 
+                            /* Acción semántica para la suma */
+                            // Obtener los valores de las expresiones
+                            double  valor1 = (double)e1;
+                            double  valor2 = (double)e2;
+                            // Calcular la suma
+                            double  resultado = valor1 + valor2;
+                            // Guardar el resultado en la pila de valores
+                            RESULT = resultado;
+                        :}
+                       | RES TKPI expresion:e1 TKCOMA expresion:e2 TKPD{: 
+                            /* Acción semántica para la resta */
+                            // Obtener los valores de las expresiones
+                            double  valor1 = (double)e1;
+                            double  valor2 = (double)e2;
+                            // Calcular la resta
+                            double  resultado = valor1 - valor2;
+                            // Guardar el resultado en la pila de valores
+                            RESULT = resultado;
+                        :}
+                       | MUL TKPI expresion:e1 TKCOMA expresion:e2 TKPD{: 
+                            /* Acción semántica para la multiplicación */
+                            // Obtener los valores de las expresiones
+                            double  valor1 = (double)e1;
+                            double  valor2 = (double)e2;
+                            // Calcular la multiplicación
+                            double  resultado = valor1 * valor2;
+                            // Guardar el resultado en la pila de valores
+                            RESULT = resultado;
+                        :}
+                       | DIV TKPI expresion:e1 TKCOMA expresion:e2 TKPD{: 
+                            /* Acción semántica para la división */
+                            // Obtener los valores de las expresiones
+                            double  valor1 = (double)e1;
+                            double  valor2 = (double)e2;
+                            // Verificar si se intenta dividir por cero
+                            if (valor2 == 0) {
+                                throw new RuntimeException("¡Error! División por cero.");
+                            }
+                            // Calcular la división
+                            double  resultado = valor1 / valor2;
+                            // Guardar el resultado en la pila de valores
+                            RESULT = resultado;
+                        :}
+                       | MODULO TKPI expresion:e1 TKCOMA expresion:e2 TKPD{: 
+                            /* Acción semántica para el módulo */
+                            // Obtener los valores de las expresiones
+                            double  valor1 = (double)e1;
+                            double  valor2 = (double)e2;
+                            // Verificar si se intenta realizar el módulo por cero
+                            if (valor2 == 0) {
+                                throw new RuntimeException("¡Error! División por cero.");
+                            }
+                            // Calcular el módulo
+                            double  resultado = valor1 % valor2;
+                            // Guardar el resultado en la pila de valores
+                            RESULT = resultado;
+                        :};
+
+estadistica ::= MEDIA TKPI arreglo_double TKPD
+              | MEDIANA TKPI arreglo_double TKPD
+              | MOD TKPI arreglo_double TKPD
+              | VARIANZA TKPI arreglo_double TKPD
+              | MAX TKPI arreglo_double TKPD
+              | MIN TKPI arreglo_double TKPD;
+
+arreglo_double ::= lista_valores;
+
+impresion_consola ::= CONSOLE_PRINT TKPI expresiones:e TKPD {:  codigoUsr+=e+"\n";   :};
+
+expresiones ::= expresiones:es TKCOMA expresion:e {: RESULT = es + ", " + e; :}
+              | expresion:es {: RESULT = es; :};
+
+impresion_arreglo ::= CONSOLE_COLUMN TKPI CADENA TKARRO arreglo TKPD ;
+
+arreglo ::= ID
+          | lista_valores;
+
+comentario ::= CADENA;
+
+expresion ::= TKNUMEROS
+            | CADENA
+            | ID
+;
