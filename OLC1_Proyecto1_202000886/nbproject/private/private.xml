@@ -6,8 +6,11 @@
             <file>file:/C:/Users/josé/OneDrive/Documents/NetBeansProjects/OLC1_Proyecto1_202000886/src/analisis/sintactico.cup</file>
             <file>file:/C:/Users/josé/OneDrive/Documents/NetBeansProjects/OLC1_Proyecto1_202000886/src/olc1_proyecto1_202000886/OLC1_Proyecto1_202000886.java</file>
             <file>file:/C:/Users/josé/OneDrive/Documents/NetBeansProjects/OLC1_Proyecto1_202000886/src/analisis/lexico.jflex</file>
-            <file>file:/C:/Users/josé/OneDrive/Documents/NetBeansProjects/OLC1_Proyecto1_202000886/src/olc1_proyecto1_202000886/Inicio.java</file>
+            <file>file:/C:/Users/josé/OneDrive/Documents/NetBeansProjects/OLC1_Proyecto1_202000886/src/analisis/scanner.java</file>
+            <file>file:/C:/Users/josé/OneDrive/Documents/NetBeansProjects/OLC1_Proyecto1_202000886/src/analisis/parser.java</file>
+            <file>file:/C:/Users/josé/OneDrive/Documents/NetBeansProjects/OLC1_Proyecto1_202000886/src/olc1_proyecto1_202000886/ANALIZADOR.java</file>
             <file>file:/C:/Users/josé/OneDrive/Documents/NetBeansProjects/OLC1_Proyecto1_202000886/src/analisis/generador.java</file>
+            <file>file:/C:/Users/josé/OneDrive/Documents/NetBeansProjects/OLC1_Proyecto1_202000886/src/analisis/sym.java</file>
         </group>
     </open-files>
 </project-private>

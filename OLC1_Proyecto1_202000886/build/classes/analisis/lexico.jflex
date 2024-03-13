@@ -34,7 +34,6 @@ import java_cup.runtime.Symbol;
 
 
 
-TKINTE = "!"
 TKARRO = "@"
 TKCI = "["
 TKCD = "]"
@@ -42,7 +41,6 @@ TKPI = "("
 TKPD = ")"
 TKASIGNACIONI = "<-"
 TKASIGNACIOND = "->"
-TKDDOBLEP = "::"
 TKDOBLEP = ":"
 TKCOMA = ","
 TKPCOMA = ";"
@@ -52,9 +50,10 @@ TKNUMEROS = [0-9]+("."[0-9]+)?
 
 //palabras reservadas
 PROGRAM = "PROGRAM"
-END = "END;"
+END = "END"
 VAR= "VAR"
-ARR = "ARR:"
+ARR = "ARR"
+ID = [a-zA-Z][_a-zA-Z0-9]*
 SUM = "SUM"
 RES = "RES"
 MUL = "MUL"
@@ -67,13 +66,13 @@ VARIANZA = "Varianza"
 MAX = "Max"
 MIN = "Min"
 CONSOLE_PRINT = "console::print="
-CONSOLE_COLUMN = "console::column= "
+CONSOLE_COLUMN = "console::column="
 DOUBLE = "DOUBLE"
 CHAR = "CHAR[]"
 
 
 %%
-<YYINITIAL> {TKINTE}     {return new Symbol(sym.TKINTE,yyline,yycolumn,yytext());}
+
 <YYINITIAL> {TKARRO}     {return new Symbol(sym.TKARRO,yyline,yycolumn,yytext());}
 <YYINITIAL> {TKCI}     {return new Symbol(sym.TKCI,yyline,yycolumn,yytext());}
 <YYINITIAL> {TKCD}     {return new Symbol(sym.TKCD,yyline,yycolumn,yytext());}
@@ -81,7 +80,6 @@ CHAR = "CHAR[]"
 <YYINITIAL> {TKPD}     {return new Symbol(sym.TKPD,yyline,yycolumn,yytext());}
 <YYINITIAL> {TKASIGNACIONI}     {return new Symbol(sym.TKASIGNACIONI,yyline,yycolumn,yytext());}
 <YYINITIAL> {TKASIGNACIOND}     {return new Symbol(sym.TKASIGNACIOND,yyline,yycolumn,yytext());}
-<YYINITIAL> {TKDDOBLEP}     {return new Symbol(sym.TKDDOBLEP,yyline,yycolumn,yytext());}
 <YYINITIAL> {TKDOBLEP}     {return new Symbol(sym.TKDOBLEP,yyline,yycolumn,yytext());}
 <YYINITIAL> {TKCOMA}     {return new Symbol(sym.TKCOMA,yyline,yycolumn,yytext());}
 <YYINITIAL> {TKPCOMA}     {return new Symbol(sym.TKPCOMA,yyline,yycolumn,yytext());}
@@ -109,6 +107,8 @@ CHAR = "CHAR[]"
 <YYINITIAL> {DOUBLE}     {return new Symbol(sym.DOUBLE,yyline,yycolumn,yytext());}
 <YYINITIAL> {CHAR}     {return new Symbol(sym.CHAR,yyline,yycolumn,yytext());}
 <YYINITIAL> [\"]            {yybegin(CADENA);cadena="";}
+<YYINITIAL> {ID}     {return new Symbol(sym.ID,yyline,yycolumn,yytext());}
+
 
 <CADENA>                    {
     [\"]    {String tmp=cadena; cadena=""; yybegin(YYINITIAL); return new Symbol(sym.CADENA, yycolumn,yyline,tmp);}

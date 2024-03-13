@@ -2,7 +2,8 @@ package analisis;
 
 // importaciones si fuese necesario
 import java_cup.runtime.Symbol;
-
+import java.util.ArrayList;
+import java.util.List;
 //import java.util.Math;
 
 //parser (codigo accesible usando punto)  p.variable
@@ -25,46 +26,117 @@ parser code
 action code
 {:
     String codigoUsr="";
+
+
+public class Variable {
+    private String nombre;
+    private String tipo;
+    private String valor;
+
+    // Constructor
+    public Variable(String nombre, String tipo, String valor) {
+        this.nombre = nombre;
+        this.tipo = tipo;
+        this.valor = valor;
+    }
+
+    // Getters y setters
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getValor() {
+        return valor;
+    }
+
+    public void setValor(String valor) {
+        this.valor = valor;
+    }
+
+    @Override
+    public String toString() {
+        return "Variable{" +
+                "nombre='" + nombre + '\'' +
+                ", tipo='" + tipo + '\'' +
+                ", valor='" + valor + '\'' +
+                '}';
+    }
+}
+        List<Variable> listaVariables = new ArrayList<>();
+
+
+    private static Variable buscarVariablePorId(List<Variable> listaVariables, String id) {
+        for (Variable variable : listaVariables) {
+            if (variable.getNombre().equals(id)) {
+                return variable;
+            }
+        }
+        return null; // Si no se encuentra la variable con el ID dado
+    }
+
 :}
 
 /* Especificación de símbolos terminales */
-terminal TKARRO, TKCI, TKCD, TKPI, TKPD, TKASIGNACIONI, TKCOMA, TKPCOMA, TKNUMEROS, PROGRAM, END, VAR, ARR, SUM, RES, 
-         MUL, DIV, MODULO, MEDIA, MEDIANA, MOD, VARIANZA, MAX, MIN, CONSOLE_PRINT, CONSOLE_COLUMN, DOUBLE, CHAR, CADENA,TKDDOBLEP,TKDOBLEP,TKASIGNACIOND,TKINTE;
 
-non terminal programa, declaraciones, declaracion, instrucciones, tipo,  expresiones, expresion, lista_valores, valores, valor,
-        instruccion, asignacion, operacion, estadistica, impresion_consola, impresion_arreglo, comentario,
-        operacion_aritmetica, arreglo_double, arreglo;
+terminal String ID, TKNUMEROS;
+terminal TKARRO, TKCI, TKCD, TKPI, TKPD, TKASIGNACIONI, TKCOMA, TKPCOMA, PROGRAM, END, VAR, ARR, SUM, RES, 
+         MUL, DIV, MODULO, MEDIA, MEDIANA, MOD, VARIANZA, MAX, MIN, CONSOLE_PRINT, CONSOLE_COLUMN, DOUBLE, CHAR, CADENA,TKDOBLEP,TKASIGNACIOND;
 
-non terminal String ID ;
+non terminal programa, declaracion, tipo,  expresiones, expresion, lista_valores, valores, valor,
+        instruccion, sentencia, body, asignacion, operacion, estadistica, impresion_consola, impresion_arreglo, comentario,
+        operacion_aritmetica, arreglo_double, arreglo,valorid;
+
+
 
 /* Producciones */
 start with programa;
 
-programa ::= PROGRAM declaraciones instrucciones END PROGRAM {:  RESULT=codigoUsr;   :};
+programa ::= PROGRAM body END PROGRAM {:  RESULT=codigoUsr;   :};
 
-declaraciones ::= declaraciones declaracion
-               | /* Producción vacía */;
+sentencia ::= declaracion 
+      | instruccion ;
 
-declaracion ::= VAR TKDOBLEP tipo TKDDOBLEP ID:id TKASIGNACIONI arreglo_double:arr END TKPCOMA{: 
+body ::= body sentencia 
+        |sentencia;
+
+declaracion ::= VAR TKDOBLEP tipo:t TKDOBLEP TKDOBLEP ID:id TKASIGNACIONI expresion:arr END TKPCOMA{:
+ 
                     /* Acción semántica para la declaración de variables */
-                    double[] arreglo = (double[]) arr ; // Obtener el arreglo de valores
+                    String arreglo = arr.toString() ; // Obtener el arreglo de valores
+                    Variable var1 = new Variable(id,t.toString(),arreglo);
                     String nombre = id; // Obtener el nombre de la variable
                     // Realizar alguna acción con la variable declarada
+                    listaVariables.add(var1);
+                    System.out.println(var1.nombre+ var1.tipo+var1.valor);
                 :}
-              | ARR TKDOBLEP tipo TKDDOBLEP TKARRO ID:id TKASIGNACIONI lista_valores:arr  END TKPCOMA{: 
+              | ARR TKDOBLEP tipo TKDOBLEP TKDOBLEP TKARRO ID:id TKASIGNACIONI lista_valores:arr  END TKPCOMA{: 
                     /* Acción semántica para la declaración de arreglos */
                     double[] arreglo = (double[]) arr; // Obtener el arreglo de valores
                     String nombre = id; // Obtener el nombre del arreglo
                     // Realizar alguna acción con el arreglo declarado
                 :};
 
-tipo ::= DOUBLE 
-       | CHAR;
+tipo ::= DOUBLE:e {:    RESULT=e;   :} 
+       | CHAR:e {:    RESULT=e;   :};
 
 lista_valores ::= TKCI valores:v TKCD{: 
                     /* Acción semántica para la lista de valores en un arreglo */
                     RESULT = (double[]) v; // Convertir la lista de valores a un arreglo de tipo double
-                :};
+                :}
+               |TKNUMEROS
+;
 
 valores ::= valores:vs TKCOMA valor:v {: 
                 /* Acción semántica para la lista de valores */
@@ -82,27 +154,25 @@ valores ::= valores:vs TKCOMA valor:v {:
 
 valor ::= TKNUMEROS:n {: RESULT = Double.parseDouble((String)n); :}
         | CADENA
-        | ID;
+        | valorid;
 
-instrucciones ::= instrucciones instruccion
-                | instruccion;
+
 
 instruccion ::= asignacion
               | operacion
               | estadistica
               | impresion_consola
-              | impresion_arreglo
               | comentario;
 
 
-operacion ::= VAR TKDOBLEP tipo TKDDOBLEP ID:id TKASIGNACIONI operacion_aritmetica:o END TKPCOMA {: 
+operacion ::= VAR TKDOBLEP tipo TKDOBLEP TKDOBLEP ID:id TKASIGNACIONI operacion_aritmetica:o END TKPCOMA {: 
                     /* Acción semántica para la operación con variables */ 
                     double resultado = (double) o; // Obtener el resultado de la operación
                     String nombre = id; // Obtener el nombre de la variable
                     RESULT = resultado;
                     // Realizar alguna acción con el resultado de la operación
                 :}
-            | ARR TKDOBLEP tipo TKDDOBLEP TKARRO ID:id TKASIGNACIOND operacion_aritmetica:o END TKPCOMA{: 
+            | ARR TKDOBLEP tipo TKDOBLEP TKDOBLEP TKARRO ID:id TKASIGNACIOND operacion_aritmetica:o END TKPCOMA{: 
                     /* Acción semántica para la operación con arreglos */ 
                     double resultado = (double) o; // Obtener el resultado de la operación
                     String nombre = id; // Obtener el nombre del arreglo
@@ -111,13 +181,16 @@ operacion ::= VAR TKDOBLEP tipo TKDDOBLEP ID:id TKASIGNACIONI operacion_aritmeti
                     // Realizar alguna acción con el resultado de la operación
                 :};
 
-operacion_aritmetica ::= SUM TKPI expresion:e1 TKCOMA expresion:e2 TKPD{: 
+operacion_aritmetica ::= SUM TKPI expresion:e1 TKCOMA expresion:e2 TKPD{:
+                            System.out.println(e1);
+ 
                             /* Acción semántica para la suma */
                             // Obtener los valores de las expresiones
-                            double  valor1 = (double)e1;
-                            double  valor2 = (double)e2;
+                            double  valor1 = (Double)e1;
+                            double  valor2 = (Double)e2;
                             // Calcular la suma
                             double  resultado = valor1 + valor2;
+                            System.out.println(resultado);
                             // Guardar el resultado en la pila de valores
                             RESULT = resultado;
                         :}
@@ -177,11 +250,12 @@ estadistica ::= MEDIA TKPI arreglo_double TKPD
               | MAX TKPI arreglo_double TKPD
               | MIN TKPI arreglo_double TKPD;
 
-arreglo_double ::= lista_valores;
 
-impresion_consola ::= CONSOLE_PRINT TKPI expresiones:e TKPD {:  codigoUsr+=e+"\n";   :};
+impresion_consola ::= CONSOLE_PRINT  expresiones:e  END TKPCOMA{:  codigoUsr+=e+"\n";  
+    System.out.println(e);
+     :};
 
-expresiones ::= expresiones:es TKCOMA expresion:e {: RESULT = es + ", " + e; :}
+expresiones ::= expresiones:es TKCOMA expresion:e {: RESULT =(String)es + ", " +(String) e; :}
               | expresion:es {: RESULT = es; :};
 
 impresion_arreglo ::= CONSOLE_COLUMN TKPI CADENA TKARRO arreglo TKPD ;
@@ -191,7 +265,20 @@ arreglo ::= ID
 
 comentario ::= CADENA;
 
-expresion ::= TKNUMEROS
-            | CADENA
-            | ID
+expresion ::= TKNUMEROS:e {:    RESULT=e;  :}
+            | CADENA:e {:    RESULT=e;   :}
+            | valorid:e {:    RESULT=e;   :}
+;
+
+valorid ::= ID:e{:
+    Variable variableEncontrada = buscarVariablePorId(listaVariables, e);
+    if (variableEncontrada != null) {
+            System.out.println("Variable encontrada: " + variableEncontrada);
+            RESULT =    variableEncontrada.valor;
+        } else {
+            RESULT = "";
+            System.out.println("Variable con ID '" + e + "' no encontrada.");
+        }
+:}
+
 ;

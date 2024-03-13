@@ -8,44 +8,45 @@ package analisis;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int MOD = 22;
-  public static final int RES = 16;
-  public static final int CADENA = 30;
-  public static final int ARR = 14;
+  public static final int MOD = 23;
+  public static final int RES = 17;
+  public static final int CADENA = 31;
+  public static final int ARR = 15;
   public static final int TKDOBLEP = 32;
-  public static final int CHAR = 29;
-  public static final int SUM = 15;
-  public static final int TKCI = 3;
-  public static final int END = 12;
-  public static final int MODULO = 19;
-  public static final int TKCD = 4;
-  public static final int PROGRAM = 11;
-  public static final int TKASIGNACIONI = 7;
-  public static final int TKDDOBLEP = 31;
-  public static final int TKPCOMA = 9;
+  public static final int CHAR = 30;
+  public static final int SUM = 16;
+  public static final int TKCI = 5;
+  public static final int END = 13;
+  public static final int MODULO = 20;
+  public static final int TKCD = 6;
+  public static final int ID = 2;
+  public static final int PROGRAM = 12;
+  public static final int TKASIGNACIONI = 9;
+  public static final int TKPCOMA = 11;
   public static final int EOF = 0;
-  public static final int TKINTE = 34;
   public static final int TKASIGNACIOND = 33;
-  public static final int CONSOLE_PRINT = 26;
-  public static final int DIV = 18;
-  public static final int TKPI = 5;
-  public static final int CONSOLE_COLUMN = 27;
+  public static final int CONSOLE_PRINT = 27;
+  public static final int DIV = 19;
+  public static final int TKPI = 7;
+  public static final int CONSOLE_COLUMN = 28;
   public static final int error = 1;
-  public static final int TKARRO = 2;
-  public static final int MIN = 25;
-  public static final int MEDIANA = 21;
-  public static final int TKPD = 6;
-  public static final int VARIANZA = 23;
-  public static final int MAX = 24;
-  public static final int MEDIA = 20;
-  public static final int MUL = 17;
-  public static final int TKNUMEROS = 10;
-  public static final int VAR = 13;
-  public static final int TKCOMA = 8;
-  public static final int DOUBLE = 28;
+  public static final int TKARRO = 4;
+  public static final int MIN = 26;
+  public static final int MEDIANA = 22;
+  public static final int TKPD = 8;
+  public static final int VARIANZA = 24;
+  public static final int MAX = 25;
+  public static final int MEDIA = 21;
+  public static final int MUL = 18;
+  public static final int TKNUMEROS = 3;
+  public static final int VAR = 14;
+  public static final int TKCOMA = 10;
+  public static final int DOUBLE = 29;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
+  "ID",
+  "TKNUMEROS",
   "TKARRO",
   "TKCI",
   "TKCD",
@@ -54,7 +55,6 @@ public class sym {
   "TKASIGNACIONI",
   "TKCOMA",
   "TKPCOMA",
-  "TKNUMEROS",
   "PROGRAM",
   "END",
   "VAR",
@@ -75,10 +75,8 @@ public class sym {
   "DOUBLE",
   "CHAR",
   "CADENA",
-  "TKDDOBLEP",
   "TKDOBLEP",
-  "TKASIGNACIOND",
-  "TKINTE"
+  "TKASIGNACIOND"
   };
 }
 
